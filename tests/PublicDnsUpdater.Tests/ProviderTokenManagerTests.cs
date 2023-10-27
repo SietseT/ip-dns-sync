@@ -19,10 +19,10 @@ public class ProviderTokenManagerTests
         };
         
         var tokenManager = new ProviderTokenManager();
-        tokenManager.StoreToken(Provider.TransIp, jwt, () => Task.FromResult<IProviderToken>(jwt));
+        tokenManager.StoreToken(Provider.TransIp, jwt, () => Task.FromResult(jwt));
 
         // Act
-        var result = await tokenManager.GetToken(Provider.TransIp);
+        var result = await tokenManager.GetToken<ProviderJwt>(Provider.TransIp);
 
         // Assert
         result.Should().Be(jwt);
@@ -49,7 +49,7 @@ public class ProviderTokenManagerTests
 
         // Act
         await Task.Delay(100); // Expire the token
-        var result = await tokenManager.GetToken(Provider.TransIp);
+        var result = await tokenManager.GetToken<ProviderJwt>(Provider.TransIp);
 
         // Assert
         result.Should().Be(newJwt);
@@ -70,11 +70,11 @@ public class ProviderTokenManagerTests
         
         var tokenManager = new ProviderTokenManager();
         var exception = new TimeoutException();
-        tokenManager.StoreToken(Provider.TransIp, jwt, () => throw exception);
+        tokenManager.StoreToken<ProviderJwt>(Provider.TransIp, jwt, () => throw exception);
 
         // Act
         await Task.Delay(100); // Expire the token
-        var act = async () => await tokenManager.GetToken(Provider.TransIp);
+        var act = async () => await tokenManager.GetToken<ProviderJwt>(Provider.TransIp);
 
         // Assert
         await act.Should().ThrowAsync<Exception>().Where(e => e.InnerException == exception);

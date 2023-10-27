@@ -5,25 +5,28 @@ namespace PublicDnsUpdater.Authentication;
 
 internal class ProviderTokenManager : IProviderTokenManager
 {
-    private readonly Dictionary<string, (IProviderToken Token, Func<Task<IProviderToken>> RefreshMethod)> _providerTokens = new();
+    private readonly Dictionary<string, (IProviderToken Token, object RefreshMethod)> _providerTokens = new();
     
-    public void StoreToken(Provider provider, IProviderToken token, Func<Task<IProviderToken>> refreshToken)
+    public void StoreToken<T>(Provider provider, IProviderToken token, Func<Task<T>> refreshToken) where T : class, IProviderToken
     {
         if(token.ExpiresAt < DateTime.UtcNow) throw new ArgumentException("Token must not be expired", nameof(token));
 
         _providerTokens[provider] = (token, refreshToken);
     }
 
-    public async Task<IProviderToken> GetToken(Provider provider)
+    public async Task<T?> GetToken<T>(Provider provider) where T : class, IProviderToken
     {
-        var providerToken = _providerTokens.TryGetValue(provider, out var token) ? token : throw new KeyNotFoundException(provider);
-        
-        if(providerToken.Token.ExpiresAt > DateTime.UtcNow) return providerToken.Token;
+        if(!_providerTokens.ContainsKey(provider)) return null;
+
+        var providerToken = _providerTokens[provider];
+        if(providerToken.Token.ExpiresAt > DateTime.UtcNow) return providerToken.Token as T ?? throw new Exception($"Token of type {providerToken.GetType()} is not of the expected type {typeof(T)}");
 
         try
         {
-            var newToken = await providerToken.RefreshMethod();
-            StoreToken(provider, newToken, providerToken.RefreshMethod);
+            var typedRefreshMethod = (Func<Task<T>>)providerToken.RefreshMethod;
+            var newToken = await typedRefreshMethod();
+            StoreToken(provider, newToken, typedRefreshMethod);
+            
             return newToken;
         }
         catch (Exception ex)

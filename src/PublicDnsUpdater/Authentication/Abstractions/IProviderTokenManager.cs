@@ -4,6 +4,7 @@ namespace PublicDnsUpdater.Authentication.Abstractions;
 
 internal interface IProviderTokenManager
 {
-    void StoreToken(Provider provider, IProviderToken token, Func<Task<IProviderToken>> refreshToken);
-    Task<IProviderToken> GetToken(Provider provider);
+    void StoreToken<T>(Provider provider, IProviderToken token, Func<Task<T>> refreshToken)
+        where T : class, IProviderToken;
+    Task<T?> GetToken<T>(Provider provider) where T : class, IProviderToken;
 }

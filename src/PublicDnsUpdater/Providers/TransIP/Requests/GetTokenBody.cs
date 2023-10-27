@@ -1,5 +1,5 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
-namespace PublicDnsUpdater.Providers.TransIP;
+namespace PublicDnsUpdater.Providers.TransIP.Requests;
 
 internal record GetTokenBody
 {
