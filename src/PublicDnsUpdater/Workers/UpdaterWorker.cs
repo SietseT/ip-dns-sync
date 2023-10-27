@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using PublicDnsUpdater.Configuration;
 using PublicDnsUpdater.Helpers;
+using PublicDnsUpdater.Http;
 using PublicDnsUpdater.Providers.TransIP;
 
 namespace PublicDnsUpdater.Workers;
@@ -21,7 +22,7 @@ public class UpdaterWorker : IHostedService, IDisposable
     
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = _httpClientFactory.CreateClient(Provider.TransIp);
 
         var json = JsonSerializer.Serialize(new GetTokenBody
         {
@@ -45,7 +46,6 @@ public class UpdaterWorker : IHostedService, IDisposable
 
         var request = new HttpRequestMessage(HttpMethod.Post, new Uri("https://api.transip.nl/v6/auth"));
         request.Headers.Add("Signature", signature);
-        
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
         
         var response = await httpClient.SendAsync(request, cancellationToken);

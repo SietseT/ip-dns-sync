@@ -3,7 +3,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PublicDnsUpdater;
 using PublicDnsUpdater.Configuration;
 using PublicDnsUpdater.Providers.TransIP;
 using PublicDnsUpdater.Workers;
@@ -16,7 +15,8 @@ builder.Configuration.AddConfiguration(new ConfigurationBuilder()
     .AddJsonFile("appsettings.Development.json", true, true)
     .Build());
 
-builder.Services.AddHttpClient();
+builder.Services.ConfigureTransIp();
+
 builder.Services.AddHostedService<UpdaterWorker>();
 builder.Services.Configure<ProviderConfiguration<TransIpConfiguration>>(builder.Configuration.GetSection("TransIP"));
 builder.Services.AddOptions<TransIpConfiguration>();

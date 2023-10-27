@@ -16,11 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Abstractions\" />
-      <Folder Include="Http\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Remove="appsettings.json" />
       <Content Include="appsettings.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
