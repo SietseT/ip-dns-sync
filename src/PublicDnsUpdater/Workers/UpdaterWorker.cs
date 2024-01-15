@@ -15,7 +15,6 @@ public class UpdaterWorker(
     : IHostedService, IDisposable
 {
     private readonly ProviderConfiguration<TransIpConfiguration> _transIpConfiguration = transIpConfiguration.Value;
-    private readonly JsonSerializerOptions _jsonSerializerOptions = JsonSerializerConfiguration.CamelCase;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {

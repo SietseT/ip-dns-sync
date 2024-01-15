@@ -33,22 +33,19 @@ internal class AuthenticationHandler(IProviderTokenManager providerTokenManager,
 
     private async Task<ProviderJwt> GetToken(CancellationToken cancellationToken)
     {
+        var timestamp = DateTime.Now.Ticks.ToString();
+        
         var json = JsonSerializer.Serialize(new GetTokenBody
         {
             Login = _transIpConfiguration.Provider.Username,
-            Label = "public-dns-updater",
+            Label = $"public-dns-updater-{timestamp}",
             Nonce = Guid.NewGuid().ToString("N")[..12],
-            ExpirationTime = "6 minutes",
+            ExpirationTime = "5 minutes",
             GlobalKey = true,
             ReadOnly = false
         }, JsonSerializerConfiguration.SnakeCase);
-
-        var privateKey = new StringBuilder();
-        privateKey.AppendLine("-----BEGIN PRIVATE KEY-----");
-        privateKey.AppendLine(_transIpConfiguration.Provider.PrivateKey);
-        privateKey.AppendLine("-----END PRIVATE KEY-----");
         
-        var signature = JwtSignature.Sign(json, privateKey.ToString());
+        var signature = JwtSignature.Sign(json, _transIpConfiguration.Provider.PrivateKey);
         var request = new HttpRequestMessage(HttpMethod.Post, new Uri("https://api.transip.nl/v6/auth"));
         request.Headers.Add("Signature", signature);
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
