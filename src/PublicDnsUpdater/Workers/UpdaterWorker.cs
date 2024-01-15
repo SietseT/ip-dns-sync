@@ -19,11 +19,17 @@ public class UpdaterWorker(
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         await Run(cancellationToken);
+        
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
+        while (await timer.WaitForNextTickAsync(cancellationToken))
+        {
+            await Run(cancellationToken);
+        }
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
     private async Task Run(CancellationToken cancellationToken)
