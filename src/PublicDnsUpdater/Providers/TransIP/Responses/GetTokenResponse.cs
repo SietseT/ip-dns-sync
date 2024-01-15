@@ -1,6 +1,6 @@
 ﻿namespace PublicDnsUpdater.Providers.TransIP.Responses;
 
-public class GetTokenResponse
+public record GetTokenResponse
 {
-    public string? Token { get; set; }
+    public string? Token { get; init; }
 }

@@ -9,7 +9,7 @@ namespace PublicDnsUpdater.Tests;
 public class ProviderTokenManagerTests
 {
     [Theory, AutoData]
-    public async Task GetToken_ForToken_ReturnsToken(string token)
+    public async Task GetToken_ForValidToken_ReturnsToken(string token)
     {
         // Arrange
         var jwt = new ProviderJwt
@@ -55,7 +55,7 @@ public class ProviderTokenManagerTests
         result.Should().Be(newJwt);
         return;
 
-        Task<IProviderToken> RefreshToken() => Task.FromResult<IProviderToken>(newJwt);
+        Task<ProviderJwt> RefreshToken() => Task.FromResult(newJwt);
     }
     
     [Theory, AutoData]

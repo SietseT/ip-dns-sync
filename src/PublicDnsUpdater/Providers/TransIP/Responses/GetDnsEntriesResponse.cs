@@ -2,7 +2,7 @@
 
 namespace PublicDnsUpdater.Providers.TransIP.Responses;
 
-public class GetDnsEntriesResponse
+public record GetDnsEntriesResponse
 {
-    public required IEnumerable<DnsEntry> DnsEntries { get; set; }
+    public required IEnumerable<DnsEntry> DnsEntries { get; init; }
 }

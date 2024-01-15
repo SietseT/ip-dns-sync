@@ -11,26 +11,20 @@ using PublicDnsUpdater.Providers.TransIP.Responses;
 
 namespace PublicDnsUpdater.Providers.TransIP;
 
-internal class AuthenticationHandler : DelegatingHandler
+internal class AuthenticationHandler(IProviderTokenManager providerTokenManager,
+    IOptions<ProviderConfiguration<TransIpConfiguration>> transIpConfiguration,
+    IHttpClientFactory httpClientFactory)
+    : DelegatingHandler
 {
-    private readonly IProviderTokenManager _providerTokenManager;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ProviderConfiguration<TransIpConfiguration> _transIpConfiguration;
+    private readonly ProviderConfiguration<TransIpConfiguration> _transIpConfiguration = transIpConfiguration.Value;
 
-    public AuthenticationHandler(IProviderTokenManager providerTokenManager, IOptions<ProviderConfiguration<TransIpConfiguration>> transIpConfiguration, IHttpClientFactory httpClientFactory)
-    {
-        _providerTokenManager = providerTokenManager;
-        _httpClientFactory = httpClientFactory;
-        _transIpConfiguration = transIpConfiguration.Value;
-    }
-    
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var token = await _providerTokenManager.GetToken<ProviderJwt>(Provider.TransIp);
+        var token = await providerTokenManager.GetToken<ProviderJwt>(Provider.TransIp);
         if (token == null)
         {
             token = await GetToken(cancellationToken);
-            _providerTokenManager.StoreToken(Provider.TransIp, token, () => GetToken(cancellationToken));
+            providerTokenManager.StoreToken(Provider.TransIp, token, () => GetToken(cancellationToken));
         }
         
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
@@ -47,10 +41,7 @@ internal class AuthenticationHandler : DelegatingHandler
             ExpirationTime = "6 minutes",
             GlobalKey = true,
             ReadOnly = false
-        }, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance
-        });
+        }, JsonSerializerConfiguration.SnakeCase);
 
         var privateKey = new StringBuilder();
         privateKey.AppendLine("-----BEGIN PRIVATE KEY-----");
@@ -62,15 +53,13 @@ internal class AuthenticationHandler : DelegatingHandler
         request.Headers.Add("Signature", signature);
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = httpClientFactory.CreateClient();
         var response = await httpClient.SendAsync(request, cancellationToken);
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
         if(!response.IsSuccessStatusCode)
             throw new Exception($"Failed to get token: ${responseBody}");
 
-        var token = JsonSerializer.Deserialize<GetTokenResponse>(responseBody, new JsonSerializerOptions {
-            PropertyNamingPolicy = new SnakeCaseNamingPolicy()
-        });
+        var token = JsonSerializer.Deserialize<GetTokenResponse>(responseBody, JsonSerializerConfiguration.SnakeCase);
         if(string.IsNullOrEmpty(token?.Token))
             throw new Exception($"Failed to deserialize response to {nameof(GetTokenResponse)}: ${responseBody}");
 
