@@ -1,4 +1,4 @@
-namespace PublicDnsUpdater.Providers.TransIP.Responses;
+namespace PublicDnsUpdater.Core;
 
 public record UpdateDnsEntryResponse
 {

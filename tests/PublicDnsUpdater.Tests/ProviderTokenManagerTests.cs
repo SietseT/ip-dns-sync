@@ -1,7 +1,6 @@
 using AutoFixture.Xunit2;
 using FluentAssertions;
 using PublicDnsUpdater.Authentication;
-using PublicDnsUpdater.Authentication.Abstractions;
 using PublicDnsUpdater.Configuration;
 
 namespace PublicDnsUpdater.Tests;

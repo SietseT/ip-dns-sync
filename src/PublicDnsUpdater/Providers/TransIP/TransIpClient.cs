@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using PublicDnsUpdater.Configuration;
 using PublicDnsUpdater.Core;
+using PublicDnsUpdater.Helpers;
 using PublicDnsUpdater.Providers.TransIP.Abstractions;
 using PublicDnsUpdater.Providers.TransIP.Requests;
 using PublicDnsUpdater.Providers.TransIP.Responses;

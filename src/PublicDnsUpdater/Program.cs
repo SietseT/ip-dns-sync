@@ -17,7 +17,7 @@ builder.Configuration.AddConfiguration(new ConfigurationBuilder()
     .AddJsonFile("appsettings.Development.json", true, true)
     .Build());
 
-builder.Services.AddHostedService<UpdaterWorker>();
+builder.Services.AddHostedService<UpdateDnsWorker>();
 builder.Services.AddSingleton<IProviderTokenManager, ProviderTokenManager>();
 
 builder.Services.ConfigureTransIp(builder.Configuration);

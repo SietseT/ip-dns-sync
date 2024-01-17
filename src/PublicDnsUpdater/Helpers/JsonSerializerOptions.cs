@@ -1,7 +1,6 @@
 using System.Text.Json;
-using PublicDnsUpdater.Helpers;
 
-namespace PublicDnsUpdater.Configuration;
+namespace PublicDnsUpdater.Helpers;
 
 public static class JsonSerializerConfiguration
 {
