@@ -25,5 +25,6 @@ public class UpdateDnsWorker(IUpdateDnsService service)
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
     }
 }

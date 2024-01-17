@@ -3,23 +3,35 @@ using PublicDnsUpdater.Core.Abstractions;
 
 namespace PublicDnsUpdater.Core;
 
-public class UpdateDnsService(
-    IDnsProviderService service,
-    IExternalIpProvider externalIpProvider,
-    IEnumerable<string> domains,
-    ILogger<UpdateDnsService> logger) : IUpdateDnsService
+public class UpdateDnsService : IUpdateDnsService
 {
+    private readonly IDnsProviderService _service;
+    private readonly IExternalIpService _externalIpService;
+    private readonly IEnumerable<string> _domains;
+    private readonly ILogger _logger;
+
+    public UpdateDnsService(IDnsProviderService service,
+        IExternalIpService externalIpService,
+        IEnumerable<string> domains,
+        ILogger logger)
+    {
+        _service = service;
+        _externalIpService = externalIpService;
+        _domains = domains;
+        _logger = logger;
+    }
+
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        var externalIp = await externalIpProvider.GetExternalIpAsync();
+        var externalIp = await _externalIpService.GetExternalIpAsync();
 
         if (string.IsNullOrEmpty(externalIp))
         {
-            logger.LogError("Did not receive an external IP address.");
+            _logger.LogError("Did not receive an external IP address.");
             return;
         }
         
-        foreach (var domain in domains)
+        foreach (var domain in _domains)
         {
             try
             {
@@ -27,7 +39,7 @@ public class UpdateDnsService(
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to update DNS entry for {domain}", domain);
+                _logger.LogError(ex, "Failed to update DNS entry for {domain}", domain);
             }
         }
     }
@@ -37,14 +49,14 @@ public class UpdateDnsService(
         var dnsEntries = await GetDnsEntriesToUpdate(domain, externalIp, cancellationToken);
         if (dnsEntries.Length == 0)
         {
-            logger.LogInformation("No DNS entries to update for {domain}", domain);
+            _logger.LogInformation("No DNS entries to update for {domain}", domain);
         }
         else
         {
             foreach (var dnsEntry in dnsEntries)
             {
-                await service.UpdateDnsEntriesAsync(domain, dnsEntry, externalIp, cancellationToken);
-                logger.LogInformation("Updated DNS entry {dnsEntry} for {domain} to {externalIp}", dnsEntry.Name, domain, externalIp);
+                await _service.UpdateDnsEntriesAsync(domain, dnsEntry, externalIp, cancellationToken);
+                _logger.LogInformation("Updated DNS entry {dnsEntry} for {domain} to {externalIp}", dnsEntry.Name, domain, externalIp);
             }
         }
     }
@@ -52,7 +64,7 @@ public class UpdateDnsService(
     private async Task<DnsEntry[]> GetDnsEntriesToUpdate(string domain, string externalIp, CancellationToken cancellationToken)
     {
         //todo Make this configurable via DI
-        var dnsEntries = (await service.GetDnsEntriesForDomainAsync(domain, cancellationToken)).ToArray();
+        var dnsEntries = (await _service.GetDnsEntriesForDomainAsync(domain, cancellationToken)).ToArray();
         dnsEntries = dnsEntries.Where(x => x.Content != externalIp && x.Type == "A").ToArray();
         
         // Check if domain has subdomain

@@ -4,7 +4,7 @@ using PublicDnsUpdater.Core;
 using PublicDnsUpdater.Core.Abstractions;
 using PublicDnsUpdater.Tests.Extensions;
 
-namespace PublicDnsUpdater.Tests;
+namespace PublicDnsUpdater.Tests.Core;
 
 public class UpdateDnsServiceTests
 {
@@ -43,7 +43,7 @@ public class UpdateDnsServiceTests
         var service = Substitute.For<IDnsProviderService>();
         service.GetDnsEntriesForDomainAsync(domain, Arg.Any<CancellationToken>()).Returns(Task.FromResult(dnsEntries.AsEnumerable()));
         
-        var externalIpProvider = Substitute.For<IExternalIpProvider>();
+        var externalIpProvider = Substitute.For<IExternalIpService>();
         externalIpProvider.GetExternalIpAsync()!.Returns(Task.FromResult(externalIp));
         
         var cancellationToken = CancellationToken.None;
@@ -93,7 +93,7 @@ public class UpdateDnsServiceTests
         var service = Substitute.For<IDnsProviderService>();
         service.GetDnsEntriesForDomainAsync(domain, Arg.Any<CancellationToken>()).Returns(Task.FromResult(dnsEntries.AsEnumerable()));
         
-        var externalIpProvider = Substitute.For<IExternalIpProvider>();
+        var externalIpProvider = Substitute.For<IExternalIpService>();
         externalIpProvider.GetExternalIpAsync()!.Returns(Task.FromResult(externalIp));
         
         var cancellationToken = CancellationToken.None;
@@ -137,7 +137,7 @@ public class UpdateDnsServiceTests
         var service = Substitute.For<IDnsProviderService>();
         service.GetDnsEntriesForDomainAsync(domain, Arg.Any<CancellationToken>()).Returns(Task.FromResult(dnsEntries.AsEnumerable()));
         
-        var externalIpProvider = Substitute.For<IExternalIpProvider>();
+        var externalIpProvider = Substitute.For<IExternalIpService>();
         externalIpProvider.GetExternalIpAsync()!.Returns(Task.FromResult(externalIp));
         
         var cancellationToken = CancellationToken.None;
@@ -159,7 +159,7 @@ public class UpdateDnsServiceTests
         // Arrange
         var service = Substitute.For<IDnsProviderService>();
         
-        var externalIpProvider = Substitute.For<IExternalIpProvider>();
+        var externalIpProvider = Substitute.For<IExternalIpService>();
         externalIpProvider.GetExternalIpAsync().Returns(Task.FromResult<string?>(null));
         
         var cancellationToken = CancellationToken.None;

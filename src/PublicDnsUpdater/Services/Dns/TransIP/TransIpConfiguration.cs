@@ -1,4 +1,4 @@
-﻿namespace PublicDnsUpdater.Providers.TransIP;
+﻿namespace PublicDnsUpdater.Services.Dns.TransIP;
 
 public record TransIpConfiguration
 {

@@ -6,15 +6,14 @@ using PublicDnsUpdater.Authentication;
 using PublicDnsUpdater.Authentication.Abstractions;
 using PublicDnsUpdater.Configuration;
 using PublicDnsUpdater.Helpers;
-using PublicDnsUpdater.Providers.TransIP.Requests;
-using PublicDnsUpdater.Providers.TransIP.Responses;
+using PublicDnsUpdater.Services.Dns.TransIP.Requests;
+using PublicDnsUpdater.Services.Dns.TransIP.Responses;
 
-namespace PublicDnsUpdater.Providers.TransIP;
+namespace PublicDnsUpdater.Services.Dns.TransIP;
 
 internal class AuthenticationHandler(IProviderTokenManager providerTokenManager,
     IOptions<ProviderConfiguration<TransIpConfiguration>> transIpConfiguration,
-    IHttpClientFactory httpClientFactory)
-    : DelegatingHandler
+    IHttpClientFactory httpClientFactory) : DelegatingHandler
 {
     private readonly ProviderConfiguration<TransIpConfiguration> _transIpConfiguration = transIpConfiguration.Value;
 

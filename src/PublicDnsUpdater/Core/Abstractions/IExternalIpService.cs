@@ -1,6 +1,6 @@
 namespace PublicDnsUpdater.Core.Abstractions;
 
-public interface IExternalIpProvider
+public interface IExternalIpService
 {
     Task<string?> GetExternalIpAsync();
 }

@@ -1,4 +1,4 @@
-﻿namespace PublicDnsUpdater.Providers.TransIP.Requests;
+﻿namespace PublicDnsUpdater.Services.Dns.TransIP.Requests;
 
 public record DnsEntry
 {

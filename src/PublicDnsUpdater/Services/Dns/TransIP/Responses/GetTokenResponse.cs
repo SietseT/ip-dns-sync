@@ -1,4 +1,4 @@
-﻿namespace PublicDnsUpdater.Providers.TransIP.Responses;
+﻿namespace PublicDnsUpdater.Services.Dns.TransIP.Responses;
 
 public record GetTokenResponse
 {

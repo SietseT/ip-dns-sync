@@ -3,7 +3,7 @@ using FluentAssertions;
 using PublicDnsUpdater.Authentication;
 using PublicDnsUpdater.Configuration;
 
-namespace PublicDnsUpdater.Tests;
+namespace PublicDnsUpdater.Tests.Authentication;
 
 public class ProviderTokenManagerTests
 {
