@@ -2,7 +2,6 @@ using AutoFixture;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using NSubstitute.ReceivedExtensions;
 using PublicDnsUpdater.Configuration;
 using PublicDnsUpdater.Core;
 using PublicDnsUpdater.Core.Abstractions;

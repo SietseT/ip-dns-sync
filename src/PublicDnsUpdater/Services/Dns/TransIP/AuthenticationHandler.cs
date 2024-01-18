@@ -11,19 +11,28 @@ using PublicDnsUpdater.Services.Dns.TransIP.Responses;
 
 namespace PublicDnsUpdater.Services.Dns.TransIP;
 
-internal class AuthenticationHandler(IProviderTokenManager providerTokenManager,
-    IOptions<ProviderConfiguration<TransIpConfiguration>> transIpConfiguration,
-    IHttpClientFactory httpClientFactory) : DelegatingHandler
+internal class AuthenticationHandler : DelegatingHandler
 {
-    private readonly ProviderConfiguration<TransIpConfiguration> _transIpConfiguration = transIpConfiguration.Value;
+    private readonly ProviderConfiguration<TransIpConfiguration> _transIpConfiguration;
+    private readonly IProviderTokenManager _providerTokenManager;
+    private readonly HttpClient _httpClient;
+
+    public AuthenticationHandler(IProviderTokenManager providerTokenManager,
+        IOptions<ProviderConfiguration<TransIpConfiguration>> transIpConfiguration,
+        HttpClient httpClient)
+    {
+        _providerTokenManager = providerTokenManager;
+        _httpClient = httpClient;
+        _transIpConfiguration = transIpConfiguration.Value;
+    }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var token = await providerTokenManager.GetToken<ProviderJwt>(Provider.TransIp);
+        var token = await _providerTokenManager.GetToken<ProviderJwt>(Provider.TransIp);
         if (token == null)
         {
             token = await GetToken(cancellationToken);
-            providerTokenManager.StoreToken(Provider.TransIp, token, () => GetToken(cancellationToken));
+            _providerTokenManager.StoreToken(Provider.TransIp, token, () => GetToken(cancellationToken));
         }
         
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
@@ -48,9 +57,8 @@ internal class AuthenticationHandler(IProviderTokenManager providerTokenManager,
         var request = new HttpRequestMessage(HttpMethod.Post, new Uri("https://api.transip.nl/v6/auth"));
         request.Headers.Add("Signature", signature);
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-        var httpClient = httpClientFactory.CreateClient();
-        var response = await httpClient.SendAsync(request, cancellationToken);
+        
+        var response = await _httpClient.SendAsync(request, cancellationToken);
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
         if(!response.IsSuccessStatusCode)
             throw new Exception($"Failed to get token: ${responseBody}");
