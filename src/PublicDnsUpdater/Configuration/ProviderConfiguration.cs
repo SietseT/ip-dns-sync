@@ -1,7 +1,6 @@
 ﻿namespace PublicDnsUpdater.Configuration;
 
-public record ProviderConfiguration<T> where T : new()
+public abstract record ProviderConfigurationBase
 {
     public IEnumerable<string> Domains { get; init; } = Array.Empty<string>();
-    public T Provider { get; init; } = new();
 }

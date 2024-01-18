@@ -14,12 +14,19 @@ public class TransIpService(HttpClient httpClient) : IDnsProviderService
     {
         var dnsEntriesRequest = new HttpRequestMessage(HttpMethod.Get, new Uri($"https://api.transip.nl/v6/domains/{domain}/dns"));
         var dnsEntriesResponse = await httpClient.SendAsync(dnsEntriesRequest, cancellationToken);
+
+        if (!dnsEntriesResponse.IsSuccessStatusCode)
+        {
+            var responseString = await dnsEntriesResponse.Content.ReadAsStringAsync(cancellationToken);
+            throw new DnsProviderException($"Failed to get DNS entries for domain '{domain}: {responseString}'");
+        }
+
         var dnsEntriesResponseBody = await dnsEntriesResponse.Content.ReadAsStringAsync(cancellationToken);
         var response = JsonSerializer.Deserialize<GetDnsEntriesResponse>(dnsEntriesResponseBody,
             JsonSerializerConfiguration.CamelCase);
         
         if(response == null)
-            throw new JsonException($"Deserializing response to '{nameof(GetDnsEntriesResponse)}' returned null.");
+            throw new JsonException($"Deserializing response to '{nameof(GetDnsEntriesResponse)}' returned null value.");
 
         return response.DnsEntries.Select(dnsEntry => new Core.DnsEntry
         {
@@ -52,6 +59,6 @@ public class TransIpService(HttpClient httpClient) : IDnsProviderService
         if (response.IsSuccessStatusCode) return;
  
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken); 
-        throw new Exception($"Failed to update DNS entry: {responseBody}"); 
+        throw new DnsProviderException($"Failed to update DNS entry: {responseBody}"); 
     }
 }

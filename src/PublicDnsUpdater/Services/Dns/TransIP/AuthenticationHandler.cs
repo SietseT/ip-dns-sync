@@ -13,12 +13,12 @@ namespace PublicDnsUpdater.Services.Dns.TransIP;
 
 internal class AuthenticationHandler : DelegatingHandler
 {
-    private readonly ProviderConfiguration<TransIpConfiguration> _transIpConfiguration;
+    private readonly TransIpConfiguration _transIpConfiguration;
     private readonly IProviderTokenManager _providerTokenManager;
     private readonly HttpClient _httpClient;
 
     public AuthenticationHandler(IProviderTokenManager providerTokenManager,
-        IOptions<ProviderConfiguration<TransIpConfiguration>> transIpConfiguration,
+        IOptions<TransIpConfiguration> transIpConfiguration,
         HttpClient httpClient)
     {
         _providerTokenManager = providerTokenManager;
@@ -45,7 +45,7 @@ internal class AuthenticationHandler : DelegatingHandler
         
         var json = JsonSerializer.Serialize(new GetTokenBody
         {
-            Login = _transIpConfiguration.Provider.Username,
+            Login = _transIpConfiguration.Username,
             Label = $"public-dns-updater-{timestamp}",
             Nonce = Guid.NewGuid().ToString("N")[..12],
             ExpirationTime = "5 minutes",
@@ -53,7 +53,7 @@ internal class AuthenticationHandler : DelegatingHandler
             ReadOnly = false
         }, JsonSerializerConfiguration.SnakeCase);
         
-        var signature = JwtSignature.Sign(json, _transIpConfiguration.Provider.PrivateKey);
+        var signature = JwtSignature.Sign(json, _transIpConfiguration.PrivateKey);
         var request = new HttpRequestMessage(HttpMethod.Post, new Uri("https://api.transip.nl/v6/auth"));
         request.Headers.Add("Signature", signature);
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");

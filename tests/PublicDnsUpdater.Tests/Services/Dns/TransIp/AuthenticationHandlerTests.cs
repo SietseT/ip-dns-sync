@@ -15,7 +15,7 @@ namespace PublicDnsUpdater.Tests.Services.Dns.TransIp;
 
 public class AuthenticationHandlerTests
 {
-    private static readonly Fixture Fixture = new Fixture();
+    private static readonly Fixture Fixture = new();
     
     [Fact]
     public async Task SendAsync_WhenTokenIsNotCached_ShouldRequestNewToken()
@@ -24,15 +24,13 @@ public class AuthenticationHandlerTests
         var tokenManager = Substitute.For<IProviderTokenManager>();
         tokenManager.GetToken<ProviderJwt>(Provider.TransIp).Returns((ProviderJwt)null!);
 
-        var configuration = Substitute.For<IOptions<ProviderConfiguration<TransIpConfiguration>>>();
-        var providerConfig = new ProviderConfiguration<TransIpConfiguration>()
+        var configuration = Substitute.For<IOptions<TransIpConfiguration>>();
+        var providerConfig = new TransIpConfiguration
         {
-            Provider = new TransIpConfiguration
-            {
-                Username = "test",
-                PrivateKey = new RSACryptoServiceProvider().ExportRSAPrivateKeyPem()
-            }
+            Username = "test",
+            PrivateKey = new RSACryptoServiceProvider().ExportRSAPrivateKeyPem()
         };
+            
         configuration.Value.Returns(providerConfig);
 
         var token = Fixture.Create<string>();
@@ -69,8 +67,8 @@ public class AuthenticationHandlerTests
         var tokenManager = Substitute.For<IProviderTokenManager>();
         tokenManager.GetToken<ProviderJwt>(Provider.TransIp).Returns(cachedToken);
 
-        var configuration = Substitute.For<IOptions<ProviderConfiguration<TransIpConfiguration>>>();
-        var providerConfig = Fixture.Create<ProviderConfiguration<TransIpConfiguration>>();
+        var configuration = Substitute.For<IOptions<TransIpConfiguration>>();
+        var providerConfig = Fixture.Create<TransIpConfiguration>();
         configuration.Value.Returns(providerConfig);
 
         var originHttpClientMock = new MockHttpMessageHandler();
@@ -101,26 +99,21 @@ public class AuthenticationHandlerTests
         var tokenManager = Substitute.For<IProviderTokenManager>();
         tokenManager.GetToken<ProviderJwt>(Provider.TransIp).Returns((ProviderJwt)null!);
 
-        var configuration = Substitute.For<IOptions<ProviderConfiguration<TransIpConfiguration>>>();
-        var providerConfig = new ProviderConfiguration<TransIpConfiguration>()
+        var configuration = Substitute.For<IOptions<TransIpConfiguration>>();
+        var providerConfig = new TransIpConfiguration
         {
-            Provider = new TransIpConfiguration
-            {
-                Username = "test",
-                PrivateKey = new RSACryptoServiceProvider().ExportRSAPrivateKeyPem()
-            }
+            Username = "test",
+            PrivateKey = new RSACryptoServiceProvider().ExportRSAPrivateKeyPem()
         };
         configuration.Value.Returns(providerConfig);
 
-        var token = Fixture.Create<string>();
-
         var originHttpClientMock = new MockHttpMessageHandler();
-        var originRequest = originHttpClientMock.When("https://example.com")
-            .WithHeaders("Authorization", $"Bearer {token}")
+        originHttpClientMock.When("https://example.com")
+            .WithHeaders("Authorization", $"Bearer {Fixture.Create<string>()}")
             .Respond(HttpStatusCode.OK);
         
         var sutHttpClientMock = new MockHttpMessageHandler();
-        var getTokenRequest = sutHttpClientMock.When("https://api.transip.nl/v6/auth")
+        sutHttpClientMock.When("https://api.transip.nl/v6/auth")
             .Respond(HttpStatusCode.InternalServerError);
         
         var sut = new AuthenticationHandler(tokenManager, configuration, sutHttpClientMock.ToHttpClient())

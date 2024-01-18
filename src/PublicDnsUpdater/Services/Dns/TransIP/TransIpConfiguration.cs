@@ -1,6 +1,8 @@
-﻿namespace PublicDnsUpdater.Services.Dns.TransIP;
+﻿using PublicDnsUpdater.Configuration;
 
-public record TransIpConfiguration
+namespace PublicDnsUpdater.Services.Dns.TransIP;
+
+public record TransIpConfiguration : ProviderConfigurationBase
 {
     public string Username { get; set; } = string.Empty;
     public string PrivateKey { get; set; } = string.Empty;
