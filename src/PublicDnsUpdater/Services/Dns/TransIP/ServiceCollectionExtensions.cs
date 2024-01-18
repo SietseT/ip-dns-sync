@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
             .AddPolicyHandler(Policies.GetDefaultRetryPolicy())
             .AddHttpMessageHandler<AuthenticationHandler>();
         
-        services.Configure<ProviderConfiguration<TransIpConfiguration>>(configuration.GetSection("TransIP"));
+        services.Configure<ProviderConfiguration<TransIpConfiguration>>(configuration.GetSection("Providers:TransIP"));
         services.AddOptions<TransIpConfiguration>();
         
         services.AddHostedService(builder =>
@@ -31,6 +31,7 @@ public static class ServiceCollectionExtensions
             var updateDnsService = new UpdateDnsService(
                 builder.GetRequiredService<TransIpService>(),
                 builder.GetRequiredService<IExternalIpService>(),
+                builder.GetRequiredService<IOptions<Settings>>().Value,
                 builder.GetRequiredService<IOptions<ProviderConfiguration<TransIpConfiguration>>>().Value.Domains,
                 loggerFactory.CreateLogger("UpdateDnsService:TransIp")
             );

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using PublicDnsUpdater.Configuration;
 using PublicDnsUpdater.Core;
 using PublicDnsUpdater.Core.Abstractions;
 using PublicDnsUpdater.Tests.Extensions;
@@ -46,10 +47,12 @@ public class UpdateDnsServiceTests
         var externalIpProvider = Substitute.For<IExternalIpService>();
         externalIpProvider.GetExternalIpAsync()!.Returns(Task.FromResult(externalIp));
         
+        var settings = GetSettings();
+        
         var cancellationToken = CancellationToken.None;
         var logger = Substitute.For<ILogger<UpdateDnsService>>();
         
-        var sut = new UpdateDnsService(service, externalIpProvider, new[] { domain }, logger);
+        var sut = new UpdateDnsService(service, externalIpProvider, settings, new[] { domain }, logger);
 
         // Act
         await sut.ExecuteAsync(cancellationToken);
@@ -96,10 +99,12 @@ public class UpdateDnsServiceTests
         var externalIpProvider = Substitute.For<IExternalIpService>();
         externalIpProvider.GetExternalIpAsync()!.Returns(Task.FromResult(externalIp));
         
+        var settings = GetSettings();
+        
         var cancellationToken = CancellationToken.None;
         var logger = Substitute.For<ILogger<UpdateDnsService>>();
         
-        var sut = new UpdateDnsService(service, externalIpProvider, new[] { domain }, logger);
+        var sut = new UpdateDnsService(service, externalIpProvider, settings, new[] { domain }, logger);
 
         // Act
         await sut.ExecuteAsync(cancellationToken);
@@ -140,10 +145,12 @@ public class UpdateDnsServiceTests
         var externalIpProvider = Substitute.For<IExternalIpService>();
         externalIpProvider.GetExternalIpAsync()!.Returns(Task.FromResult(externalIp));
         
+        var settings = GetSettings();
+        
         var cancellationToken = CancellationToken.None;
         var logger = Substitute.For<ILogger<UpdateDnsService>>();
         
-        var sut = new UpdateDnsService(service, externalIpProvider, new[] { domain }, logger);
+        var sut = new UpdateDnsService(service, externalIpProvider, settings, new[] { domain }, logger);
 
         // Act
         await sut.ExecuteAsync(cancellationToken);
@@ -154,6 +161,45 @@ public class UpdateDnsServiceTests
     }
     
     [Fact]
+    public async Task Execute_InTestMode_UsesIpAddressFromSettings()
+    {
+        // Arrange
+        const string domain = "example.com";
+        var dnsEntries = new[]
+        {
+            new DnsEntry
+            {
+                Name = "@",
+                Type = "A",
+                Content = "1.1.1.1",
+                ExpiresAt = 0
+            }
+        };
+
+        const string externalIp = "2.2.2.2";
+        
+        var service = Substitute.For<IDnsProviderService>();
+        service.GetDnsEntriesForDomainAsync(domain, Arg.Any<CancellationToken>()).Returns(Task.FromResult(dnsEntries.AsEnumerable()));
+        
+        var externalIpProvider = Substitute.For<IExternalIpService>();
+        externalIpProvider.GetExternalIpAsync()!.Returns(Task.FromResult(externalIp));
+        
+        var settings = GetSettings(externalIp);
+        
+        var cancellationToken = CancellationToken.None;
+        var logger = Substitute.For<ILogger<UpdateDnsService>>();
+        
+        var sut = new UpdateDnsService(service, externalIpProvider, settings, new[] { domain }, logger);
+
+        // Act
+        await sut.ExecuteAsync(cancellationToken);
+
+        // Assert
+        await externalIpProvider.DidNotReceive().GetExternalIpAsync();
+        await service.Received(1).UpdateDnsEntriesAsync(domain, Arg.Is(dnsEntries.First(e => e.Name is "@")), externalIp, cancellationToken);
+    }
+    
+    [Fact]
     public async Task Execute_ExternalIpProviderError_LogsError()
     {
         // Arrange
@@ -161,11 +207,13 @@ public class UpdateDnsServiceTests
         
         var externalIpProvider = Substitute.For<IExternalIpService>();
         externalIpProvider.GetExternalIpAsync().Returns(Task.FromResult<string?>(null));
+
+        var settings = GetSettings();
         
         var cancellationToken = CancellationToken.None;
         var logger = Substitute.For<ILogger<UpdateDnsService>>();
         
-        var sut = new UpdateDnsService(service, externalIpProvider, new[] {"example.com" }, logger);
+        var sut = new UpdateDnsService(service, externalIpProvider, settings, new[] {"example.com" }, logger);
 
         // Act
         await sut.ExecuteAsync(cancellationToken);
@@ -173,5 +221,14 @@ public class UpdateDnsServiceTests
         // Assert
         logger.Received(1).AnyLogOfType(LogLevel.Error);
         await service.DidNotReceive().GetDnsEntriesForDomainAsync(Arg.Any<string>(), cancellationToken);
+    }
+    
+    private static Settings GetSettings(string? testModeIpAddress = null)
+    {
+        return new Settings
+        {
+            TestMode = testModeIpAddress != null,
+            TestModeIpAddress = testModeIpAddress
+        };
     }
 }
