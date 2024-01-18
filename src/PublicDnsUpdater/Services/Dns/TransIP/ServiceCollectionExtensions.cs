@@ -24,19 +24,20 @@ public static class ServiceCollectionExtensions
         services.Configure<TransIpConfiguration>(configuration.GetSection("Providers:TransIP"));
         services.AddOptions<TransIpConfiguration>();
         
-        services.AddHostedService(builder =>
+        services.AddHostedService<IUpdateDnsWorker>(builder =>
         {
             var loggerFactory = builder.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger($"{Provider.TransIp}Worker");
                 
             var updateDnsService = new UpdateDnsService(
                 builder.GetRequiredService<TransIpService>(),
                 builder.GetRequiredService<IExternalIpService>(),
                 builder.GetRequiredService<IOptions<Settings>>().Value,
                 builder.GetRequiredService<IOptions<TransIpConfiguration>>().Value.Domains,
-                loggerFactory.CreateLogger("UpdateDnsService:TransIp")
+                logger
             );
             
-            return new UpdateDnsWorker(updateDnsService);
+            return new UpdateDnsWorker(updateDnsService, Provider.TransIp, logger);
         });
 
         return services;

@@ -1,6 +1,6 @@
 ﻿namespace PublicDnsUpdater.Configuration;
 
-internal record Provider
+public record Provider
 {
     private Provider(string value)
     {
