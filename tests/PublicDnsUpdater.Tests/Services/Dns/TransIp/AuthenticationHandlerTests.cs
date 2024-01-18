@@ -93,4 +93,47 @@ public class AuthenticationHandlerTests
         originHttpClientMock.AddRequestExpectation(originRequest);
         await sutHttpClientMock.DidNotReceive().SendAsync(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>());
     }
+    
+    [Fact]
+    public async Task SendAsync_WhenTokenIsNotCached_ThrowsExceptionWhenRetrievingNonSuccesfulResponse()
+    {
+        // Arrange
+        var tokenManager = Substitute.For<IProviderTokenManager>();
+        tokenManager.GetToken<ProviderJwt>(Provider.TransIp).Returns((ProviderJwt)null!);
+
+        var configuration = Substitute.For<IOptions<ProviderConfiguration<TransIpConfiguration>>>();
+        var providerConfig = new ProviderConfiguration<TransIpConfiguration>()
+        {
+            Provider = new TransIpConfiguration
+            {
+                Username = "test",
+                PrivateKey = new RSACryptoServiceProvider().ExportRSAPrivateKeyPem()
+            }
+        };
+        configuration.Value.Returns(providerConfig);
+
+        var token = Fixture.Create<string>();
+
+        var originHttpClientMock = new MockHttpMessageHandler();
+        var originRequest = originHttpClientMock.When("https://example.com")
+            .WithHeaders("Authorization", $"Bearer {token}")
+            .Respond(HttpStatusCode.OK);
+        
+        var sutHttpClientMock = new MockHttpMessageHandler();
+        var getTokenRequest = sutHttpClientMock.When("https://api.transip.nl/v6/auth")
+            .Respond(HttpStatusCode.InternalServerError);
+        
+        var sut = new AuthenticationHandler(tokenManager, configuration, sutHttpClientMock.ToHttpClient())
+        {
+            InnerHandler = originHttpClientMock
+        };
+
+        var invoker = new HttpMessageInvoker(sut);
+
+        // Act
+        var sutAction = async() => await invoker.SendAsync(new HttpRequestMessage(HttpMethod.Get, "https://example.com"), CancellationToken.None);
+
+        // Assert
+        await sutAction.Should().ThrowAsync<Exception>();
+    }
 }
