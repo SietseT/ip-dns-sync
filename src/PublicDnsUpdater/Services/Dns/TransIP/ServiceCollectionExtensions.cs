@@ -28,16 +28,17 @@ public static class ServiceCollectionExtensions
         {
             var loggerFactory = builder.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger($"{Provider.TransIp}Worker");
-                
+            var settings = builder.GetRequiredService<IOptions<Settings>>().Value;
+            
             var updateDnsService = new UpdateDnsService(
                 builder.GetRequiredService<TransIpService>(),
                 builder.GetRequiredService<IExternalIpService>(),
-                builder.GetRequiredService<IOptions<Settings>>().Value,
+                settings,
                 builder.GetRequiredService<IOptions<TransIpConfiguration>>().Value.Domains,
                 logger
             );
             
-            return new UpdateDnsWorker(updateDnsService, Provider.TransIp, logger);
+            return new UpdateDnsWorker(updateDnsService, Provider.TransIp, settings, logger);
         });
 
         return services;
