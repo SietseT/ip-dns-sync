@@ -1,0 +1,35 @@
+services:
+  dns-updater:
+    image: public-dns-updater:1.0.0
+    environment:
+      Providers__TransIP__Domains__0: sietsetrommelen.nl 
+      Providers__TransIP__Username: SietseTrommelen
+      Providers__TransIP__PrivateKey: |
+        -----BEGIN PRIVATE KEY-----
+        MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCnmirBLKkVS2kE
+        Ao+Cvy4TlQ5lDT90LLgOPtRdvHvq0JDMN2SJHflvd12QXSdI7YrtYEpdQe+UTXtY
+        DLMJ4RojGc+tLtl1nkY3c7Ni6JFf3ZdT5ZOZHSFFhYFqb69itkZAnau3OfGcKVuj
+        dokKPQW6WLaESo75KCd/qHSaMqJ34PBSISSnM9Tg0kiHTz4s7w/oBbe4g3njZKP8
+        FuCbNp4ENH+SBNIUF88Yoy6zfyxXo+MuNRxDfoXR8JzQgAoRnBtf1fBgCbw3U6GY
+        cwVLDit1XvehHADZXBnySKHh+RgwcI9jdxSmLCuKCDx/QVGjn/5zvD43zsg1w6Et
+        9c7nqFqVAgMBAAECggEAP0EB7dILJkxFoAvPWcsJer6ApkavsgrGlCnGQHJIWkDI
+        xSoKuW0knJryJu/hSbbM/fWfWz7tSo1LhdmVIJ9iG+k75eKOk8NeQMNb6nJXm1So
+        LjOw1tKVogVW6HKqQJkGPpDDI+2scAFz4md0JPcO2Ftu1tLEzugGsDlFeISvqIoR
+        1Czc01V48cxKdS9fAGKhOmyLZFHe1Jqu0HrCmsBgY6L4u72Gy0kPaySzRtqTE5JU
+        G97WuBTF/Np1C5P4jPmb+gqwQ0QwB0kXwIbs/mtEDbjeJIG1k8MnREc4N1Q8ADNu
+        v6G0ieBpOWQKaYmkLNMK7H8BUGlDVBKsqFVCysazAQKBgQDaqa2a34Cwj0l+FX+c
+        CxXOj/wyBj25gIKjxis9EnWTnFhrF9dR2K3XegQodraqXGM1dj0Zj3C3kaZty0Vb
+        yPBfH+smRulBpyy3gwZ95DU46UoFNiosyyEV0sXXWJ/fPdch9VCZePgR7cUA7Shj
+        rgitjOXUJxcxqvhY5m4kfFkP9QKBgQDEOH9JHEclUdUBqFZZP8j32NtyBa5xBD8N
+        8Y1L6kNGWn5y7NVvvwxfx/qjqt5jfQykNxRH76e7ZaYtOBmUa2ItcTffwEbX99P1
+        LtY6ts9RIxnv5heLF7lxTVYS0OziX+xXxEzQ9nZUVszZmcwdJq3xqiUo+BPvP+aJ
+        eYrnbCScIQKBgFoszXZoI7cscD95+DVO8QBNqtCqeDwO/lEyAVTfTvO/70rC+z46
+        oH6TSDGzu2MIVLWQfGQVHoPlof/3azQN6usfy6buaXV0zuEjPMMgIL7GnosFqmDs
+        qElKseI8Hzo+U4EinMmd9JfYOX1HUHfDJrsDtyhFsq/99QschGGxkj0dAoGAGI0Z
+        IASxwjGi/Toa07/vXVN84Z9kXC+z1ALNMxp0oHDiMW8ApaK54aIb8i6G9NvIoSNj
+        Hj0WN5RYXoAOc0ucVSM9YnmkY5FWq+7YTzBgcD58GFAp0fV99nc+tcv+V7S41aJy
+        GhM8awERUIi1yU/1o68uRxoDJIRSTBExGBOn4QECgYBTjOhHJfGYIj1EYclnunDR
+        ox6H96PNOrflqHVSypNTJLAL5QeeL/jaYANLL++0zMHLtkY0g4EjmZ4KKuzmcZhh
+        1Sch0djs1zVKTJaFRMQqC/5ebgVJyE0Y7xuIs8ZuhtaQIXBdvAiz8y5hiG+k92NO
+        7eBo+7a91z10Ckx3RyZaOg==
+        -----END PRIVATE KEY-----
