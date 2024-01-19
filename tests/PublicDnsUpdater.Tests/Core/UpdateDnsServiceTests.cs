@@ -74,7 +74,8 @@ public class UpdateDnsServiceTests
     public async Task Execute_ForSubdomain_UpdatesSubdomainDnsEntry()
     {
         // Arrange
-        const string domain = "sub.example.com";
+        const string domain = "example.com";
+        const string subdomain = "sub.example.com";
         var dnsEntries = new[]
         {
             new DnsEntry
@@ -96,7 +97,7 @@ public class UpdateDnsServiceTests
         const string externalIp = "2.2.2.2";
         
         var service = Substitute.For<IDnsProviderService>();
-        service.GetDnsEntriesForDomainAsync(domain, Arg.Any<CancellationToken>()).Returns(Task.FromResult(dnsEntries.AsEnumerable()));
+        service.GetDnsEntriesForDomainAsync(Arg.Is(domain), Arg.Any<CancellationToken>()).Returns(Task.FromResult(dnsEntries.AsEnumerable()));
         
         var externalIpProvider = Substitute.For<IExternalIpService>();
         externalIpProvider.GetExternalIpAsync()!.Returns(Task.FromResult(externalIp));
@@ -106,13 +107,13 @@ public class UpdateDnsServiceTests
         var cancellationToken = CancellationToken.None;
         var logger = Substitute.For<ILogger<UpdateDnsService>>();
         
-        var sut = new UpdateDnsService(service, externalIpProvider, settings, new[] { domain }, logger);
+        var sut = new UpdateDnsService(service, externalIpProvider, settings, new[] { subdomain }, logger);
 
         // Act
         await sut.ExecuteAsync(cancellationToken);
 
         // Assert
-        await service.Received(1).UpdateDnsEntriesAsync(domain, dnsEntries.First(e => e.Name is "sub"), externalIp, cancellationToken);
+        await service.Received(1).UpdateDnsEntriesAsync(Arg.Is(subdomain), dnsEntries.First(e => e.Name is "sub"), externalIp, cancellationToken);
         logger.Received(1).AnyLogOfType(LogLevel.Information);
     }
     

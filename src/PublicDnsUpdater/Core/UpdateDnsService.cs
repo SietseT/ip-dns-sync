@@ -70,18 +70,29 @@ public class UpdateDnsService : IUpdateDnsService
     
     private async Task<DnsEntry[]> GetDnsEntriesToUpdate(string domain, string externalIp, CancellationToken cancellationToken)
     {
-        var dnsEntries = (await _service.GetDnsEntriesForDomainAsync(domain, cancellationToken)).ToArray();
-        dnsEntries = dnsEntries.Where(x => x.Content != externalIp && x.Type == "A").ToArray();
-        
         // Check if domain has subdomain
         var domainParts = domain.Split('.').Where(part => !string.IsNullOrWhiteSpace(part)).ToArray();
+        
+        bool isSubDomain;
+        var rootDomain = domain;
 
         if (domainParts is { Length: 2 })
+            isSubDomain = false;
+        else if (domainParts is { Length: 3 })
+        {
+            isSubDomain = true;
+            rootDomain = $"{domainParts[1]}.{domainParts[2]}";
+        }
+        else
+            throw new FormatException($"Invalid domain format: ${domain}. A domain should be in the format 'example.com' or 'sub.example.com'.");
+        
+        var dnsEntries = (await _service.GetDnsEntriesForDomainAsync(rootDomain, cancellationToken)).ToArray();
+        
+        dnsEntries = dnsEntries.Where(x => x.Content != externalIp && x.Type == "A").ToArray();
+        
+        if (!isSubDomain)
             return dnsEntries.Where(dnsEntry => dnsEntry.Name is "@" or "www").ToArray();
         
-        if (domainParts is { Length: 3 })
-            return dnsEntries.Where(dnsEntry => dnsEntry.Name == domainParts[0]).ToArray();
-
-        throw new FormatException($"Invalid domain format: ${domain}. A domain should be in the format 'example.com' or 'sub.example.com'.");
+        return dnsEntries.Where(dnsEntry => dnsEntry.Name == domainParts[0]).ToArray();
     }
 }
