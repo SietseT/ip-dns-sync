@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IpDnsSync", "src\IpDnsSync\IpDnsSync.csproj", "{5B9BE315-87A4-4F63-B50E-CAD81778C892}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{016BE1CC-D997-4A92-9D6C-3C992A116EFB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{84D33222-4C01-41FF-9487-0FD1996C7CAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IpDnsSync.Tests", "tests\IpDnsSync.Tests\IpDnsSync.Tests.csproj", "{2D7F9B89-241C-4CAB-92C6-3C92499E236A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBD05CDD-635D-4811-9F9D-9E97B84328C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBD05CDD-635D-4811-9F9D-9E97B84328C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBD05CDD-635D-4811-9F9D-9E97B84328C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBD05CDD-635D-4811-9F9D-9E97B84328C0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B9BE315-87A4-4F63-B50E-CAD81778C892}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B9BE315-87A4-4F63-B50E-CAD81778C892}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B9BE315-87A4-4F63-B50E-CAD81778C892}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B9BE315-87A4-4F63-B50E-CAD81778C892}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D7F9B89-241C-4CAB-92C6-3C92499E236A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D7F9B89-241C-4CAB-92C6-3C92499E236A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D7F9B89-241C-4CAB-92C6-3C92499E236A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D7F9B89-241C-4CAB-92C6-3C92499E236A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5B9BE315-87A4-4F63-B50E-CAD81778C892} = {016BE1CC-D997-4A92-9D6C-3C992A116EFB}
+		{2D7F9B89-241C-4CAB-92C6-3C92499E236A} = {84D33222-4C01-41FF-9487-0FD1996C7CAD}
+	EndGlobalSection
+EndGlobal
