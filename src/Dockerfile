@@ -1,10 +1,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS publish
 
 WORKDIR /src
-COPY src/PublicDnsUpdater/PublicDnsUpdater.csproj ./
-RUN dotnet restore "./PublicDnsUpdater.csproj"
-COPY src/PublicDnsUpdater .
-RUN dotnet publish "PublicDnsUpdater.csproj" -c Release -o /app/publish \
+COPY app/IpDnsSync/IpDnsSync.csproj ./
+RUN dotnet restore "./IpDnsSync.csproj"
+COPY app/IpDnsSync .
+RUN dotnet publish "IpDnsSync.csproj" -c Release -o /app/publish \
   --no-restore \
   --self-contained true \
   /p:PublishTrimmed=true \
@@ -22,4 +22,4 @@ USER dotnetuser
 COPY --chown=dotnetuser --from=publish /app/publish .
 RUN rm -f appsettings.Development.json
 
-ENTRYPOINT ["./PublicDnsUpdater"]
+ENTRYPOINT ["./IpDnsSync"]
