@@ -2,11 +2,23 @@
 Keeps your (public) DNS records up-to-date whenever you have a dynamic IP address. 
 Never lose external access again when your ISP decides to change your external IP address.
 
+---
+
+- [Features](#features)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Providers](#providers)
+    - [TransIP](#transip)
+
+---
+
 ## Features
 - Automatically checks if your external IP address has changed and updates specified A records for your DNS provider
 - Support for multiple DNS providers
   Currently only TransIP though, but it is easy to add other providers
 - Cross-platform support - runs as Docker container
+
+---
 
 ## Usage
 The Docker image of `ip-dns-sync` is published to Docker Hub and can either be run as a standalone Docker command, or via Docker Compose.
@@ -29,6 +41,8 @@ services:
 Note that the above examples do **not** have any DNS providers configured.
 Starting the container this way will result in an error during startup.
 
+---
+
 ## Configuration
 Several settings can be configured to modify the behavior the tool. These should be set as environment variables.
 
@@ -38,6 +52,7 @@ Several settings can be configured to modify the behavior the tool. These should
 
 For configuring providers, please refer to [providers](#providers).
 
+---
 
 ## Providers
 This section describes how to configure each DNS provider.
