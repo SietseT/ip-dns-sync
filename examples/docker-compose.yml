@@ -1,0 +1,12 @@
+services:
+  ip-dns-sync:
+    container_name: ip-dns-sync
+    image: sietsetro/ip-dns-sync:latest
+    environment:
+      Providers__TransIP__Domains__0: example.com
+      Providers__TransIP__Username: ExampleUser
+      Providers__TransIP__PrivateKey: |
+        -----BEGIN PRIVATE KEY-----
+        Your very secret private key
+        -----END PRIVATE KEY-----
+    restart: always
