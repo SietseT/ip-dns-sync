@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\IpDnsSync\IpDnsSync.csproj" />
+      <ProjectReference Include="..\..\app\IpDnsSync\IpDnsSync.csproj" />
     </ItemGroup>
 
 </Project>
